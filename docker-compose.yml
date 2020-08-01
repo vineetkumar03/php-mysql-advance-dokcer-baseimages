@@ -1,0 +1,48 @@
+version: "3.2"
+services:
+  web:
+    build: ./
+    image: webcompose:v1
+    container_name: web
+    ports:
+      - "8000:80"
+    environment:
+      - MYSQL_USERNAME=tests
+      - MYSQL_PASSWORD=tests
+      - MYSQL_DATABASE=register
+      - MYSQL_HOST=mysql
+    hostname: phpweb
+    volumes:
+      - ./src:/app
+    depends_on:
+      - mysql
+    networks:
+      - frontend
+    links:
+      - mysql
+    restart: on-failure
+    stdin_open: true
+    tty: true    
+        
+        
+  mysql:
+    build: ./mysqldocker
+    image: dbcompose:v1
+    container_name: database
+    hostname: database
+    ports:
+      - "3306:3306"
+    restart: always
+    networks: 
+      - frontend
+    environment:
+      - MYSQL_ROOT_PASSWORD=tests
+      - MYSQL_USER=tests
+      - MYSQL_PASSWORD=tests
+      - MYSQL_DATABASE=register
+    volumes:
+      - ./mysql:/var/lib/mysql
+
+networks:
+  frontend:
+  backend:
